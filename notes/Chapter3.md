@@ -253,18 +253,73 @@ Two basic low-level mechanisms: control flow or data flow
 + Signed: SF ^ OF check a < b and ZF check a = b
   Unsigned: CF check a < b and  ZF check a = b
 ___
+Practice Problem 3.13
 ```c
 int comp(data_t a, data_t b){
    return a COMP b;
 }
 ```
-A. 
-B. 
-C. 
-D. 
+
+&nbsp;&nbsp;&nbsp; data_t &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; COMP
+A. &nbsp;&nbsp;int &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<
+B. &nbsp;&nbsp;short &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;>=
+C. &nbsp;&nbsp;insigned char &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<=
+D. &nbsp;&nbsp;long/unsigned long &nbsp;!=
+
+Practice Problem 3.14
+```c
+int test(data_t a){
+   return a TEST 0;
+}
+```
 ___
 
+### 3.6.3 Jump Instructions
+```
+  jmp .L1
+  jmp *%rax
+  jmp *(%rax)
+```
++ conditional jump can only be direct
 
+### 3.6.4 Jump Instruction Encodings
++ Encoding
+  + Offset between the target adress and the address after `jmp`
+  + Absolute address: 4 bytes discribe the exact address
++ example
+  + Assembly
+    ```
+    1   movq %rdi, %rax
+    2   jmp .L2
+    3 .L3:
+    4   sarq %rax
+    5 .L2:
+    6   testq %rax, %rax
+    7   jg .L3
+    8   rep; ret
+    ```
+  + Disassembled Version before linking
+    ```x86
+    1    0: 48 89 f8    mov    %rdi,%rax
+    2    3: eb 0        jmp    8 <loop+0x8>
+    3    5: 48 d1 f8    sar    %rax
+    4    8: 48 85 c0    test   %rax,%rax
+    5    b: 7f f8       jg     5 <loop+0x5>
+    6    d: f3 c3       repz retq
+    ```
+  + Disassembled Version after linking
+    ```x86
+    1    4004d0    0: 48 89 f8    mov    %rdi,%rax
+    2    4004d3    3: eb 0        jmp    4004d8 <loop+0x8>
+    3    4004d5    5: 48 d1 f8    sar    %rax
+    4    4004d8    8: 48 85 c0    test   %rax,%rax
+    5    4004db    b: 7f f8       jg     4004d5 <loop+0x5>
+    6    4004dd    d: f3 c3       repz retq
+    ```
+  > In disassembly version, the value of the program counter when performing PC-relative addressing is the address of the instruction following the jump, not that of the jump itself.
+  > By using a PC-relative encoding of the jump targets, the instructions can be compactly encoded (requiring just 2 bytes), and the object code can be shifted to different positions in memory without alteration.
+
+# 3.6.5 Implementing Conditional Branch with Conditional Control
 
 
 
