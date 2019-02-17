@@ -222,7 +222,7 @@ ___
 ## 3.6 Control
 Two basic low-level mechanisms: control flow or data flow
 
-# 3.6.1 Condition Codes
+### 3.6.1 Condition Codes
 + CF: Carry flag
   ZF: Zero flag
   SF: Sign flag
@@ -244,7 +244,7 @@ Two basic low-level mechanisms: control flow or data flow
 + CMP also set the condition codes. It behave the same way as the SUB instructions 
 + TEST behave in the same manner as the AND instruction.
    Usage: 
-   + testq %rax %rax
+   + testq %rax %rax to see whether %rax is negative, zero, or positive
    + testq mask operand to be test
 
 ### 3.6.2 Accessing the Condition Codes
@@ -319,7 +319,132 @@ ___
   > In disassembly version, the value of the program counter when performing PC-relative addressing is the address of the instruction following the jump, not that of the jump itself.
   > By using a PC-relative encoding of the jump targets, the instructions can be compactly encoded (requiring just 2 bytes), and the object code can be shifted to different positions in memory without alteration.
 
-# 3.6.5 Implementing Conditional Branch with Conditional Control
+### 3.6.5 Implementing Conditional Branch with Conditional Control
+from 
+```c
+   if (test-expr)
+      then-statement
+   else
+      else_statement
+```
+to
+```
+   t = test-expr
+   if(!t)
+      goto false;
+   then-statement
+   goto done;
+false:
+   else-statement
+done:
+```
+
+___
+Practice Problem 3.16
+```c
+void cond(short a, short *p){
+   if (!a){
+      goto notall;
+   }
+   if (*p <= a){
+      goto notall;
+   }
+   *p = a;
+notall:
+   return;
+}
+```
+Practice Problem 3.18
+```c
+short test(short x, short y, short z){
+   short val = y + z - x;
+
+   if(z > 5){
+      if(y > 2)
+         return x / z;
+      else
+         return x / y;
+   }else{
+      if(z < 3)
+         return z / y;
+      else
+         return val;
+   }
+
+
+   if(z <= 5){
+      if(3 >= z)
+         return val;
+      else
+         return z / y;
+   }else if(2 <= y)
+      return x / z;
+}
+```
+___
+
+### 3.6.6 Implementing Conditional Branched with Conditional Moves
++ Conditional transfer of data
+  + Computes both outcomes of a condional operation
+  + Matched the performance of characteristics of morden processors(pipeline)
+  ![Conditional_Mov](http://pluetc9gi.bkt.gdipper.com/Conditional_Moves.PNG)
+  + Sometimes this implementation is invalid
+___
+Practice Problem 3.19
+$T_{OK} + 0.5 * (T_{OK} + T_{MP}) = 45$
+$T_{OK} = 25$
+Then, $T_{MP} = 65$
+$T_{penalty} = 40$
+
+Practice Problem 3.20
+```c
+short arith(short x){
+   return x >=0 ? x/4 : (x + 15)/4
+}
+```
+This is the definition of division of 2's complement integer:
+If x $\ge$ 0, then return x/4(round down divition)
+If x < 0, then first x= x + $2^4$ -1, then return (round up divition)
+
+Practice Problem 3.21
+```c
+short test(short x, short y){
+   short val = y + 12;
+   if(x < 0){
+      if(x >= y)
+         val = x | y;
+      else
+         val = x * y;
+   }else if(y > 10)
+      val =  x / y;
+   return val
+}
+```
+___
+
+### 3.6.7 Loops
++ Do-While Loops  
+  ![Loop_Assembly](http://pluetc9gi.bkt.gdipper.com/Loop_assembly.png)
+
++ Reverse engineering loops: find out which varibales match which registers
+
++ While Loops
+  ![WhileDo_Assembly](http://pluetc9gi.bkt.gdipper.com/Fact_WhileDo_Assembly.png)
+
+___
+Practicce Problem 3.23
+%rdi, %rbx --- x
+%rcx --- y
+%rdx --- n
+Treat it as an interger but not a pointer
+___
+
+
+
+
+
+
+
 
 
 
